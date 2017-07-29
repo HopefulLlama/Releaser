@@ -1,0 +1,25 @@
+{
+  "name": "rlsr",
+  "version": "0.0.0",
+  "description": "NPM package to release things",
+  "main": "src/rlsr.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HopefulLlama/rlsr.git"
+  },
+  "keywords": [
+    "npm",
+    "release-automation",
+    "release",
+    "nodejs"
+  ],
+  "author": "jonlaw10170@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HopefulLlama/rlsr/issues"
+  },
+  "homepage": "https://github.com/HopefulLlama/rlsr#readme"
+}

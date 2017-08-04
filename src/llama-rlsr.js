@@ -9,7 +9,7 @@ function validate(pathToConfig, newVersion) {
   if(pathToConfig !== undefined && newVersion !== undefined) {
     return true;
   } else {
-    ErrorHandler.logErrorAndSetExitCode('Usage: rlsr <config-file> <version>');
+    ErrorHandler.logErrorAndSetExitCode('Usage: llama-rlsr <config-file> <version>');
     return false;
   }
 }
@@ -20,13 +20,13 @@ function run(pathToConfig, newVersion) {
     let config = new Configuration(ConfigurationReader.read(pathToConfig));
 
     if(config.isValid()) {
-      winston.info(`Reading rlsr metadata`);
+      winston.info(`Reading llama-rlsr metadata`);
       let versionMetadata = MetadataReader.read(newVersion);
 
       if(versionMetadata !== null) {
         winston.info('Executing configuration blocks.');
         config.execute(versionMetadata);
-        winston.info('rlsr finished execution. Exiting...');
+        winston.info('llama-rlsr finished execution. Exiting...');
         return true;
       }
     }
@@ -36,7 +36,7 @@ function run(pathToConfig, newVersion) {
 }
 
 if (require.main === module) {
-  // Usage: rlsr external/config.js 2.2.0
+  // Usage: llama-rlsr external/config.js 2.2.0
   let pathToConfig = process.argv[2];
   let newVersion = process.argv[3];
   run(pathToConfig, newVersion);

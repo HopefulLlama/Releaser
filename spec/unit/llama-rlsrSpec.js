@@ -5,7 +5,7 @@ const BASE = '../../';
 const ErrorHandler = require(`${BASE}src/util/ErrorHandler`);
 const ConfigurationReader = require(`${BASE}src/reader/ConfigurationReader`);
 const MetadataReader = require(`${BASE}src/reader/MetadataReader`);
-const rlsr = require(`${BASE}src/rlsr`);
+const llamaRlsr = require(`${BASE}src/llama-rlsr`);
 
 const CONFIG_FILE = './swag';
 const NEW_VERSION = '0.0.2';
@@ -15,7 +15,7 @@ const INPUTS = [CONFIG_FILE, NEW_VERSION];
 const INVALID_CONFIG_OPTIONS = [1, 2, 3];
 const VALID_CONFIG_OPTIONS = [() => {}, () => {}];
 
-describe('rlsr', () => {
+describe('llama-rlsr', () => {
   beforeEach(() => {
     [
       {object: winston, method: 'info'},
@@ -33,10 +33,10 @@ describe('rlsr', () => {
       [undefined, NEW_VERSION],
       [undefined, undefined],
     ].forEach((testCase, index) => {
-      let result = rlsr(...testCase);
+      let result = llamaRlsr(...testCase);
 
       expect(result).toBe(false, index);
-      expect(ErrorHandler.logErrorAndSetExitCode).toHaveBeenCalledWith('Usage: rlsr <config-file> <version>');
+      expect(ErrorHandler.logErrorAndSetExitCode).toHaveBeenCalledWith('Usage: llama-rlsr <config-file> <version>');
     });
   });
 
@@ -53,7 +53,7 @@ describe('rlsr', () => {
       });
 
       it('should return false on invalid config', () => {
-        let result = rlsr(...INPUTS);
+        let result = llamaRlsr(...INPUTS);
 
         expect(result).toBe(false);
       });
@@ -67,7 +67,7 @@ describe('rlsr', () => {
       });
 
       afterEach(() => {
-        expect(winston.info).toHaveBeenCalledWith('Reading rlsr metadata');
+        expect(winston.info).toHaveBeenCalledWith('Reading llama-rlsr metadata');
       });
 
       describe('which is invalid', () => {
@@ -78,7 +78,7 @@ describe('rlsr', () => {
         });
 
         it('should return false on invalid metadata', () => {
-          let result = rlsr(...INPUTS);
+          let result = llamaRlsr(...INPUTS);
 
           expect(result).toBe(false);
         });
@@ -92,10 +92,10 @@ describe('rlsr', () => {
         });
 
         it('should pass through', () => {
-          let result = rlsr(...INPUTS);
+          let result = llamaRlsr(...INPUTS);
 
           expect(winston.info).toHaveBeenCalledWith('Executing configuration blocks.');
-          expect(winston.info).toHaveBeenCalledWith('rlsr finished execution. Exiting...');
+          expect(winston.info).toHaveBeenCalledWith('llama-rlsr finished execution. Exiting...');
           
           expect(result).toBe(true);          
         });      

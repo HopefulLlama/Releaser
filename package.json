@@ -1,14 +1,14 @@
 {
-  "name": "rlsr",
+  "name": "llama-rlsr",
   "version": "0.0.1",
   "description": "NPM package to release things",
-  "main": "src/rlsr.js",
+  "main": "src/llama-rlsr.js",
   "scripts": {
     "test": "gulp"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/HopefulLlama/rlsr.git"
+    "url": "git+https://github.com/HopefulLlama/llama-rlsr.git"
   },
   "keywords": [
     "npm",
@@ -19,9 +19,9 @@
   "author": "jonlaw10170@gmail.com",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/HopefulLlama/rlsr/issues"
+    "url": "https://github.com/HopefulLlama/llama-rlsr/issues"
   },
-  "homepage": "https://github.com/HopefulLlama/rlsr#readme",
+  "homepage": "https://github.com/HopefulLlama/llama-rlsr#readme",
   "dependencies": {
     "winston": "^2.3.1"
   },

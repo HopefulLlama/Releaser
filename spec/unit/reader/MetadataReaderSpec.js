@@ -6,7 +6,7 @@ const BASE = '../../../';
 const MetadataReader = require(`${BASE}src/reader/MetadataReader`);
 const ErrorHandler = require(`${BASE}src/util/ErrorHandler`);
 
-const RLSR_METADATA_FILE = 'rlsr.metadata.json';
+const LLAMA_RLSR_METADATA_FILE = 'llama-rlsr.metadata.json';
 
 describe('MetadataReader', () => {
   let testee;
@@ -20,9 +20,7 @@ describe('MetadataReader', () => {
     testee = MetadataReader.read('0.0.1');
 
     expect(testee).toBe(null);
-    expect(ErrorHandler.logErrorAndSetExitCode).toHaveBeenCalledWith(`Error in reading ${RLSR_METADATA_FILE} file. ` +
-      `See for more details.${os.EOL}` +
-      'Error: ENOENT: no such file or directory, open \'C:\\Users\\JL185305\\Documents\\rlsr\\rlsr.metadata.json\'');
+    expect(ErrorHandler.logErrorAndSetExitCode).toHaveBeenCalled();
   });
 
   it('should read metadata and append newVersion', () => {
@@ -31,7 +29,7 @@ describe('MetadataReader', () => {
       genericData: true
     };
 
-    fs.writeFileSync(RLSR_METADATA_FILE, JSON.stringify(metadata));
+    fs.writeFileSync(LLAMA_RLSR_METADATA_FILE, JSON.stringify(metadata));
 
     testee = MetadataReader.read('0.0.2');
 
@@ -42,6 +40,6 @@ describe('MetadataReader', () => {
     });
     expect(ErrorHandler.logErrorAndSetExitCode).not.toHaveBeenCalled();
 
-    fs.unlinkSync(RLSR_METADATA_FILE);
+    fs.unlinkSync(LLAMA_RLSR_METADATA_FILE);
   });
 });

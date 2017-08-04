@@ -4,7 +4,7 @@ Contributions are welcome. Very very welcome.
 
 ## Issues Page
 
-The [GitHub Issues](https://github.com/HopefulLlama/rlsr/issues) page for rlsr covers a variety of things:
+The [GitHub Issues](https://github.com/HopefulLlama/llama-rlsr/issues) page for llama-rlsr covers a variety of things:
 - Bugs
 - Features
 - Discussions
@@ -24,7 +24,7 @@ Include as much detail as possible.
 - Is this achievable by the current implementation of JointSCAD at all?
 
 ### Discussions
-Feel free to add your input to any item within the [GitHub Issues](https://github.com/HopefulLlama/rlsr/issues) list.
+Feel free to add your input to any item within the [GitHub Issues](https://github.com/HopefulLlama/llama-rlsr/issues) list.
 
 Unwritten rules apply of be nice, be open-minded, etc.
 
@@ -34,6 +34,6 @@ GitHub has a pretty strictly enforced branch/pull request flow if you wish to su
 ## Dev Setup
 Follow the instructions listed in [Getting Started](../../..#getting-started).
 
-Clone rlsr repository and run `npm install` in the to install all dependencies needed.
+Clone llama-rlsr repository and run `npm install` in the to install all dependencies needed.
 
 Additionally run `npm install -g gulp`. Gulp is used to run linting and unit tests.

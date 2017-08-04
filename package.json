@@ -1,6 +1,6 @@
 {
   "name": "rlsr",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "NPM package to release things",
   "main": "src/rlsr.js",
   "scripts": {

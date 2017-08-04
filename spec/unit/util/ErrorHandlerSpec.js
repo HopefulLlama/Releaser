@@ -11,6 +11,10 @@ describe('ErrorHandler', () => {
     ErrorHandler.logErrorAndSetExitCode('Hello');
 
     expect(winston.error).toHaveBeenCalledWith('Hello');
-    expect(process.exitCode).toBe(1);
+    if(process.exitCode === 1) {
+    	process.exitCode = 0;
+    } else {
+    	fail();
+    }
   });
 });

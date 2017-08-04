@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-- Nothing yet
+### Changed
+- Renamed module to llama-rlsr because someone else got rlsr first
 
 ## [0.0.1] - 2017-08-04
 ### Added

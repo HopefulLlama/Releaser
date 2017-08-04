@@ -1,86 +1,38 @@
 const winston = require('winston');
 
-const USAGE = 'USAGE: rlsr <config-file> <version>'
-const RLSR_METADATA_FILE = 'rlsr.metadata.json';
+const Configuration = require('./reader/Configuration');
+const ConfigurationReader = require('./reader/ConfigurationReader');
+const ErrorHandler = require('./util/ErrorHandler');
+const MetadataReader = require('./reader/MetadataReader');
 
-function readRlsrMetadata() {
-  return JSON.parse(fs.readFileSync(RLSR_METADATA_FILE, 'utf8'));
-}
-
-function logErrorAndSetExitCode(error) {
-  winston.error(error);
-  process.exitCode = 1;
-}
-
-function areArgumentsValid(pathToConfig, newVersion) {
-  if(pathToConfig && newVersion) {
+function validate(pathToConfig, newVersion) {
+  if(pathToConfig !== undefined && newVersion !== undefined) {
     return true;
   } else {
-    logErrorAndSetExitCode(USAGE);
+    ErrorHandler.logErrorAndSetExitCode('Usage: rlsr <config-file> <version>');
     return false;
   }
 }
 
-function isConfigurationValid(configuration) {
-  if(configuration !== null) {
-    if(Array.isArray(config)) {
-      return true;
-    } else {
-      logErrorAndSetExitCode('Configuration must export an array of functions to execute.');  
-      return false;
-    }
-  }
-}
-
-function readConfigFile(pathToConfig) {
-  try {
-    winston.info(`Reading configuration file: ${pathToConfig}`);
-    return require(pathToConfig);
-  } catch(err) {
-    logErrorAndSetExitCode(`Error in executing configuration file. See for more details.\n${err}`);
-    return null;
-  }
-}
-
-function readMetadataFile(metadataFile, newVersion) {
-  try { 
-    winston.info(`Reading rlsr metadata: ${metadata}`);
-    let metadata = readRlsrMetadata();
-    metadata.newVersion = newVersion;
-    return metadata;
-  } catch(err) {
-    logErrorAndSetExitCode(`Error in reading rlsr.metadata.json file. See for more details.\n${err}`);
-    return null;
-  }
-}
-
-function executeConfiguration(configuration, versionMetadata) {
-  winston.info('Executing configuration blocks.');
-  configuration.forEach(executeConfigurationBlock.bind(null, versionMetadata)) {    
-  winston.info('rlsr finished execution. Exiting...');
-}
-
-
-function executeConfigurationBlock(versionMetadata, func, index) {
-  if(typeof func === 'function') {
-    func(versionMetadata);
-  } else {
-    logErrorAndSetExitCode(`Index ${index} of configuration file is not a function.`);
-  }
-}
-
 function run(pathToConfig, newVersion) {
-  if(areArgumentsValid(pathToConfig, newVersion)) {
-    let config = readConfigFile;
+  if(validate(pathToConfig, newVersion)) {
+    winston.info(`Reading configuration file: ${pathToConfig}`);
+    let config = new Configuration(ConfigurationReader.read(pathToConfig));
 
-    if(isConfigurationValid(config)) {
-      let versionMetadata = readMetadataFile(RLSR_METADATA_FILE, newVersion);
+    if(config.isValid()) {
+      winston.info(`Reading rlsr metadata`);
+      let versionMetadata = MetadataReader.read(newVersion);
 
       if(versionMetadata !== null) {
-        executeConfiguration(config, versionMetadata);
+        winston.info('Executing configuration blocks.');
+        config.execute(versionMetadata);
+        winston.info('rlsr finished execution. Exiting...');
+        return true;
       }
     }
   }
+
+  return false;
 }
 
 if (require.main === module) {

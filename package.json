@@ -4,7 +4,7 @@
   "description": "NPM package to release things",
   "main": "src/rlsr.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp"
   },
   "repository": {
     "type": "git",
@@ -27,10 +27,8 @@
   },
   "devDependencies": {
     "gulp": "^3.9.1",
-    "gulp-coverage": "^0.3.38",
     "gulp-jasmine": "^2.4.2",
     "gulp-jshint": "^2.0.4",
-    "jshint": "^2.9.5",
-    "proxyquire": "^1.8.0"
+    "jshint": "^2.9.5"
   }
 }

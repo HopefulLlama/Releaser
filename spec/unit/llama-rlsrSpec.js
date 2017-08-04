@@ -42,7 +42,7 @@ describe('llama-rlsr', () => {
 
   describe('reading config', () => {
     afterEach(() => {
-      expect(winston.info).toHaveBeenCalledWith(`Reading configuration file: ${CONFIG_FILE}`);
+      expect(winston.info).toHaveBeenCalled();
     });
 
     describe('which is invalid', () => {

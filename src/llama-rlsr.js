@@ -1,3 +1,5 @@
+const path = require('path');
+
 const winston = require('winston');
 
 const Configuration = require('./reader/Configuration');
@@ -14,10 +16,16 @@ function validate(pathToConfig, newVersion) {
   }
 }
 
+function normalizePath(pathToFile) {
+	return path.resolve(process.cwd(), pathToFile);
+}
+
 function run(pathToConfig, newVersion) {
   if(validate(pathToConfig, newVersion)) {
-    winston.info(`Reading configuration file: ${pathToConfig}`);
-    let config = new Configuration(ConfigurationReader.read(pathToConfig));
+  	let actualPath = normalizePath(pathToConfig);
+
+    winston.info(`Reading configuration file: ${actualPath}`);
+    let config = new Configuration(ConfigurationReader.read(actualPath));
 
     if(config.isValid()) {
       winston.info(`Reading llama-rlsr metadata`);

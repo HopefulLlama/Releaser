@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+- Nothing yet
+
+## [0.0.3]
 ### Added
 - Updating metadata file after execution
 
@@ -19,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Added basic skeleton for calling rlsr modules
 
-[Unreleased]: https://github.com/HopefulLlama/llama-rlsr/compare/v0.0.2...HEAD
+[Unreleased]: https://github.com/HopefulLlama/llama-rlsr/compare/v0.0.3...HEAD
+[0.0.3]: https://github.com/HopefulLlama/llama-rlsr/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/HopefulLlama/llama-rlsr/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/HopefulLlama/llama-rlsr/compare/06a80b339d2803211d62b6fc9dfd6e5f8fd952ea...v0.0.1

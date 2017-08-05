@@ -4,7 +4,7 @@ const BASE = '../../';
 
 const ErrorHandler = require(`${BASE}src/util/ErrorHandler`);
 const ConfigurationReader = require(`${BASE}src/reader/ConfigurationReader`);
-const MetadataReader = require(`${BASE}src/reader/MetadataReader`);
+const MetadataHandler = require(`${BASE}src/reader/MetadataHandler`);
 const llamaRlsr = require(`${BASE}src/llama-rlsr`);
 
 const CONFIG_FILE = './swag';
@@ -33,9 +33,7 @@ describe('llama-rlsr', () => {
       [undefined, NEW_VERSION],
       [undefined, undefined],
     ].forEach((testCase, index) => {
-      let result = llamaRlsr(...testCase);
-
-      expect(result).toBe(false, index);
+      expect(llamaRlsr(...testCase)).toBe(false, index);
       expect(ErrorHandler.logErrorAndSetExitCode).toHaveBeenCalledWith('Usage: llama-rlsr <config-file> <version>');
     });
   });
@@ -53,9 +51,7 @@ describe('llama-rlsr', () => {
       });
 
       it('should return false on invalid config', () => {
-        let result = llamaRlsr(...INPUTS);
-
-        expect(result).toBe(false);
+        expect(llamaRlsr(...INPUTS)).toBe(false);
       });
     });
 
@@ -67,38 +63,63 @@ describe('llama-rlsr', () => {
       });
 
       afterEach(() => {
-        expect(winston.info).toHaveBeenCalledWith('Reading llama-rlsr metadata');
+        expect(winston.info).toHaveBeenCalledWith('Reading llama-rlsr metadata.');
       });
 
       describe('which is invalid', () => {
         beforeEach(() => {
-          spyOn(MetadataReader, 'read').and.callFake(() => {
+          spyOn(MetadataHandler, 'read').and.callFake(() => {
             return null;
           }); 
         });
 
         it('should return false on invalid metadata', () => {
-          let result = llamaRlsr(...INPUTS);
-
-          expect(result).toBe(false);
+          expect(llamaRlsr(...INPUTS)).toBe(false);
         });
       });
 
       describe('which is valid', () => {
         beforeEach(() => {
-          spyOn(MetadataReader, 'read').and.callFake(() => {
+          spyOn(MetadataHandler, 'read').and.callFake(() => {
             return {};
           }); 
         });
 
-        it('should pass through', () => {
-          let result = llamaRlsr(...INPUTS);
+        afterEach(() => {
+          [
+            'Executing configuration blocks.',
+            'llama-rlsr finished execution.',
+            'Updating llama-rlsr metadata.'
+          ].forEach((message) => {
+            expect(winston.info).toHaveBeenCalledWith(message);
+          });
+        });
 
-          expect(winston.info).toHaveBeenCalledWith('Executing configuration blocks.');
-          expect(winston.info).toHaveBeenCalledWith('llama-rlsr finished execution. Exiting...');
-          
-          expect(result).toBe(true);          
-        });      
+        describe('with succesful metadata write', () => {
+          beforeEach(() => {
+            spyOn(MetadataHandler, 'write').and.callFake(() => {
+              return true;
+            });
+          });
+
+          it('should pass through', () => {
+            expect(llamaRlsr(...INPUTS)).toBe(true);
+            expect(MetadataHandler.write).toHaveBeenCalledWith(NEW_VERSION);
+          });
+        });
+
+        describe('with failing metadata write', () => {
+          beforeEach(() => {
+            spyOn(MetadataHandler, 'write').and.callFake(() => {
+              return false;
+            });
+          });
+
+          it('should fail overall', () => {
+            expect(llamaRlsr(...INPUTS)).toBe(false);
+            expect(MetadataHandler.write).toHaveBeenCalledWith(NEW_VERSION);
+          });
+        });
       });
     });
   });

@@ -16,6 +16,18 @@ function read(newVersion) {
   }
 }
 
+function write(newVersion) {
+	let metadata = {oldVersion: newVersion};
+	try {
+		fs.writeFileSync(LLAMA_RLSR_METADATA_FILE, JSON.stringify(metadata));
+		return true;
+	} catch(err) {
+    ErrorHandler.logErrorAndSetExitCode(`Error in writing ${LLAMA_RLSR_METADATA_FILE} file. See for more details.${os.EOL}${err}`);
+    return false;
+	}
+}
+
 module.exports = {
-  read
+  read,
+  write
 };

@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-- Nothing yet
+### Changed
+- Now using `done()` to finish an execution block, to support async llama-rlsr modules
 
 ## [0.0.3]
 ### Added

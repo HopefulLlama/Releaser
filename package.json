@@ -1,6 +1,6 @@
 {
   "name": "llama-rlsr",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "NPM package to release things",
   "main": "src/llama-rlsr.js",
   "scripts": {

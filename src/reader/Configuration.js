@@ -1,10 +1,11 @@
 const ErrorHandler = require('../util/ErrorHandler');
 
-function executeBlock(versionMetadata, func, index) {
+function executeBlock(versionMetadata, func, done, index) {
   if(typeof func === 'function') {
-    func(versionMetadata);
+    func(versionMetadata, done);
   } else {
     ErrorHandler.logErrorAndSetExitCode(`Index ${index} of configuration file is not a function.`);
+    done();
   }
 }
 
@@ -14,7 +15,17 @@ class Configuration {
   }
   
   execute(versionMetadata) {
-    this.executionBlocks.forEach(executeBlock.bind(null, versionMetadata));
+    let index = 0;
+    let executionBlocks = this.executionBlocks;
+
+    function done() {
+      let block = executionBlocks.shift();
+      if(block !== undefined) {
+        executeBlock(versionMetadata, block, done, index++);
+      }
+    }
+
+    done();
   }
 
   isValid() {

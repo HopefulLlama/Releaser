@@ -5,6 +5,10 @@ const BASE = '../../../';
 const Configuration = require(`${BASE}src/reader/Configuration`);
 const ErrorHandler = require(`${BASE}src/util/ErrorHandler`);
 
+const MOCK_FUNCTION = (versionMetadata, done) => {
+  done();
+};
+
 describe('Configuration', () => {
   let testee;
 
@@ -38,7 +42,7 @@ describe('Configuration', () => {
   });
 
   it('should be valid', () => {
-    testee = new Configuration([() => {}, () => {}]);
+    testee = new Configuration([MOCK_FUNCTION, MOCK_FUNCTION]);
 
     expect(testee.isValid()).toBe(true);
     expect(ErrorHandler.logErrorAndSetExitCode).not.toHaveBeenCalled();
@@ -54,15 +58,15 @@ describe('Configuration', () => {
   });
 
   it('should execute functions', () => {
-    let funcOne = jasmine.createSpy('funcOne');
-    let funcTwo = jasmine.createSpy('funcTwo');
+    let funcOne = jasmine.createSpy('funcOne').and.callFake(MOCK_FUNCTION);
+    let funcTwo = jasmine.createSpy('funcTwo').and.callFake(MOCK_FUNCTION);
 
     testee = new Configuration([funcOne, funcTwo]);
 
     let metadataVersion = {};
     testee.execute(metadataVersion);
 
-    expect(funcOne).toHaveBeenCalledWith(metadataVersion);
-    expect(funcTwo).toHaveBeenCalledWith(metadataVersion);
+    expect(funcOne).toHaveBeenCalledWith(metadataVersion, jasmine.any(Function));
+    expect(funcTwo).toHaveBeenCalledWith(metadataVersion, jasmine.any(Function));
   });
 });

@@ -13,7 +13,10 @@ const NEW_VERSION = '0.0.2';
 const INPUTS = [CONFIG_FILE, NEW_VERSION];
 
 const INVALID_CONFIG_OPTIONS = [1, 2, 3];
-const VALID_CONFIG_OPTIONS = [() => {}, () => {}];
+const MOCK_FUNCTION = (versionMetadata, done) => {
+  done();
+};
+const VALID_CONFIG_OPTIONS = [MOCK_FUNCTION, MOCK_FUNCTION];
 
 describe('llama-rlsr', () => {
   beforeEach(() => {

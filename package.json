@@ -4,7 +4,8 @@
   "description": "NPM package to release things",
   "main": "src/llama-rlsr.js",
   "scripts": {
-    "test": "gulp"
+    "test": "gulp",
+    "release": "node src/llama-rlsr.js llama-rlsr.config.js"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,9 @@
     "gulp": "^3.9.1",
     "gulp-jasmine": "^2.4.2",
     "gulp-jshint": "^2.0.4",
-    "jshint": "^2.9.5"
+    "jshint": "^2.9.5",
+    "llama-rlsr-keep-a-changelog": "0.0.4",
+    "llama-rlsr-npm": "0.0.2",
+    "simple-git": "^1.76.0"
   }
 }

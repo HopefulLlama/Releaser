@@ -2,7 +2,7 @@ const path = require('path');
 
 const winston = require('winston');
 
-const Configuration = require('../reader/Configuration');
+const Configuration = require('../config/Configuration');
 const ConfigurationReader = require('../reader/ConfigurationReader');
 const ErrorHandler = require('../util/ErrorHandler');
 const MetadataHandler = require('../reader/MetadataHandler');
@@ -21,28 +21,37 @@ function normalizePath(pathToFile) {
 }
 
 function run(pathToConfig, newVersion) {
+  let success = false;
+
   if(validate(pathToConfig, newVersion)) {
     let actualPath = normalizePath(pathToConfig);
 
     winston.info(`Reading configuration file: ${actualPath}`);
     let config = new Configuration(ConfigurationReader.read(actualPath));
 
-    if(config.isValid()) {
-      winston.info('Reading llama-rlsr metadata.');
-      let versionMetadata = MetadataHandler.read(newVersion);
+    winston.info('Reading llama-rlsr metadata.');
+    let versionMetadata = MetadataHandler.read(newVersion);
 
-      if(versionMetadata !== null) {
-        winston.info('Executing configuration blocks.');
-        config.execute(versionMetadata);
+    if(versionMetadata !== null) {
+      winston.info('Executing configuration.');
+
+      winston.info('Executing pre-release steps.');
+      config.preRelease.execute(versionMetadata);
+      winston.info('Pre-release steps finished execution.');
+
+      winston.info('Updating llama-rlsr metadata.');
+      if(MetadataHandler.write(newVersion)) {
+        winston.info('Executing release steps.');
+        config.release.execute(versionMetadata);
+        winston.info('Release steps finished execution.');        
         winston.info('llama-rlsr finished execution.');
 
-        winston.info('Updating llama-rlsr metadata.');
-        return MetadataHandler.write(newVersion);
+        success = true;
       }
     }
   }
 
-  return false;
+  return success;
 }
 
 module.exports = {

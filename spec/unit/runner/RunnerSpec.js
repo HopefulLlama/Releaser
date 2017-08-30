@@ -10,13 +10,26 @@ const Runner = require(`${BASE}src/runner/Runner`);
 const CONFIG_FILE = './swag';
 const NEW_VERSION = '0.0.2';
 
+const METADATA = {
+  oldVersion: '0.0.1',
+  newVersion: NEW_VERSION
+};
+
 const INPUTS = [CONFIG_FILE, NEW_VERSION];
 
 const INVALID_CONFIG_OPTIONS = [1, 2, 3];
 const MOCK_FUNCTION = (versionMetadata, done) => {
   done();
 };
-const VALID_CONFIG_OPTIONS = [MOCK_FUNCTION, MOCK_FUNCTION];
+
+const SPY_ONE = jasmine.createSpy('spyOne').and.callFake(MOCK_FUNCTION);
+const SPY_TWO = jasmine.createSpy('spyTwo').and.callFake(MOCK_FUNCTION);
+const SPY_THREE = jasmine.createSpy('spyThree').and.callFake(MOCK_FUNCTION);
+
+const VALID_CONFIG_OPTIONS = {
+  preRelease: [SPY_ONE, SPY_TWO],
+  release: [SPY_THREE]
+};
 
 describe('Runner', () => {
   beforeEach(() => {
@@ -84,18 +97,21 @@ describe('Runner', () => {
       describe('which is valid', () => {
         beforeEach(() => {
           spyOn(MetadataHandler, 'read').and.callFake(() => {
-            return {};
+            return METADATA;
           }); 
         });
 
         afterEach(() => {
           [
-            'Executing configuration blocks.',
-            'llama-rlsr finished execution.',
+            'Executing pre-release steps.',
+            'Pre-release steps finished execution.',
             'Updating llama-rlsr metadata.'
           ].forEach((message) => {
             expect(winston.info).toHaveBeenCalledWith(message);
           });
+
+          expect(SPY_ONE).toHaveBeenCalledWith(METADATA, jasmine.any(Function));
+          expect(SPY_TWO).toHaveBeenCalledWith(METADATA, jasmine.any(Function));
         });
 
         describe('with succesful metadata write', () => {
@@ -103,6 +119,18 @@ describe('Runner', () => {
             spyOn(MetadataHandler, 'write').and.callFake(() => {
               return true;
             });
+          });
+
+          afterEach(() => {
+            [
+              'Executing release steps.',
+              'Release steps finished execution.',
+              'llama-rlsr finished execution.'
+            ].forEach((message) => {
+              expect(winston.info).toHaveBeenCalledWith(message);
+            });
+
+            expect(SPY_THREE).toHaveBeenCalledWith(METADATA, jasmine.any(Function));
           });
 
           it('should pass through', () => {

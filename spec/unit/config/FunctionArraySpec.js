@@ -2,18 +2,18 @@ const winston = require('winston');
 
 const BASE = '../../../';
 
-const Configuration = require(`${BASE}src/reader/Configuration`);
+const FunctionArray = require(`${BASE}src/config/FunctionArray`);
 const ErrorHandler = require(`${BASE}src/util/ErrorHandler`);
 
 const MOCK_FUNCTION = (versionMetadata, done) => {
   done();
 };
 
-describe('Configuration', () => {
+describe('FunctionArray', () => {
   let testee;
 
   beforeEach(() => {
-  	testee = undefined;
+    testee = undefined;
 
     spyOn(ErrorHandler, 'logErrorAndSetExitCode').and.stub();
     spyOn(winston, 'info').and.stub();
@@ -32,36 +32,23 @@ describe('Configuration', () => {
     [false, true],
     [null, undefined],
     [() => {}, true]
-  ].forEach((invalidBlock) => {
-    it(`${typeof invalidBlock} should be invalid`, () => {
-      testee = new Configuration(invalidBlock);
-
-      expect(testee.isValid()).toBe(false);
-      expect(ErrorHandler.logErrorAndSetExitCode).toHaveBeenCalledWith('Configuration must export an array of functions to execute.');
+  ].forEach((invalid) => {
+    it(`${typeof invalid} should be invalid`, () => {
+      testee = new FunctionArray(invalid);
+      expect(ErrorHandler.logErrorAndSetExitCode).toHaveBeenCalledWith(`Expected an array of functions, instead got: ${invalid}`);
     });
   });
 
   it('should be valid', () => {
-    testee = new Configuration([MOCK_FUNCTION, MOCK_FUNCTION]);
-
-    expect(testee.isValid()).toBe(true);
+    testee = new FunctionArray([MOCK_FUNCTION, MOCK_FUNCTION]);
     expect(ErrorHandler.logErrorAndSetExitCode).not.toHaveBeenCalled();
-  });
-
-  it('should both log errors', () => {
-    testee = new Configuration(['123', 123]);
-
-    testee.execute({});
-
-    expect(ErrorHandler.logErrorAndSetExitCode).toHaveBeenCalledWith('Index 0 of configuration file is not a function.');
-    expect(ErrorHandler.logErrorAndSetExitCode).toHaveBeenCalledWith('Index 1 of configuration file is not a function.');
   });
 
   it('should execute functions', () => {
     let funcOne = jasmine.createSpy('funcOne').and.callFake(MOCK_FUNCTION);
     let funcTwo = jasmine.createSpy('funcTwo').and.callFake(MOCK_FUNCTION);
 
-    testee = new Configuration([funcOne, funcTwo]);
+    testee = new FunctionArray([funcOne, funcTwo]);
 
     let metadataVersion = {};
     testee.execute(metadataVersion);

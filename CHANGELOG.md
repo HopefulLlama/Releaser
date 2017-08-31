@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-- Nothing yet
+### Changed
+- Configuration now takes `preRelease` and `release` properties; Both of which require an array of functions.
 
 ## [0.0.4] - 2017-08-14
 ### Changed

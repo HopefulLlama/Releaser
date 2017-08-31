@@ -16,47 +16,62 @@ describe('MetadataHandler', () => {
     spyOn(ErrorHandler, 'logErrorAndSetExitCode').and.stub();
   });
 
-  it('should error when file is not available', () => {
-    testee = MetadataHandler.read('0.0.1');
-
-    expect(testee).toBe(null);
-    expect(ErrorHandler.logErrorAndSetExitCode).toHaveBeenCalled();
-  });
-
-  it('should read metadata and append newVersion', () => {
-    let metadata = {
-      oldVersion: '0.0.1',
-      genericData: true
-    };
-
-    fs.writeFileSync(LLAMA_RLSR_METADATA_FILE, JSON.stringify(metadata));
-
-    testee = MetadataHandler.read('0.0.2');
-
-    expect(testee).toEqual({
-      oldVersion: '0.0.1',
-      genericData: true,
-      newVersion: '0.0.2'
+  describe('read', () => {
+    afterEach(() => {
+      expect(fs.readFileSync).toHaveBeenCalledWith('llama-rlsr.metadata.json', 'utf8');
     });
-    expect(ErrorHandler.logErrorAndSetExitCode).not.toHaveBeenCalled();
 
-    fs.unlinkSync(LLAMA_RLSR_METADATA_FILE);
+    describe('when file is not available', () => {
+      beforeEach(() => {
+        spyOn(fs, 'readFileSync').and.throwError('llama');
+      });
+
+      it('should error', () => {
+        testee = MetadataHandler.read('0.0.1');
+
+        expect(testee).toBe(null);
+        expect(ErrorHandler.logErrorAndSetExitCode).toHaveBeenCalled();
+      });
+    });
+
+    describe('when file is available', () => {
+      beforeEach(() => {
+        spyOn(fs, 'readFileSync').and.callFake(() => {
+          return JSON.stringify({
+            oldVersion: '0.0.1', 
+            genericData: true
+          });
+        });
+      });
+      it('should read metadata and append newVersion', () => {
+        testee = MetadataHandler.read('0.0.2');
+
+        expect(testee).toEqual({
+          oldVersion: '0.0.1',
+          genericData: true,
+          newVersion: '0.0.2'
+        });
+        expect(ErrorHandler.logErrorAndSetExitCode).not.toHaveBeenCalled();
+      });
+    });
   });
 
-  it('should write metadata', () => {
-    spyOn(fs, 'writeFileSync').and.stub();
-    let result = MetadataHandler.write('0.0.2');
+  describe('write', () => {
+    it('should write metadata', () => {
+      spyOn(fs, 'writeFileSync').and.stub();
+      let result = MetadataHandler.write('0.0.2');
 
-    expect(result).toBe(true);
-    expect(fs.writeFileSync).toHaveBeenCalledWith(LLAMA_RLSR_METADATA_FILE, '{"oldVersion":"0.0.2"}');
-  });
+      expect(result).toBe(true);
+      expect(fs.writeFileSync).toHaveBeenCalledWith(LLAMA_RLSR_METADATA_FILE, '{"oldVersion":"0.0.2"}');
+    });
 
-  it('should log when error on write', () => {
-    spyOn(fs, 'writeFileSync').and.throwError('llama');
+    it('should log when error on write', () => {
+      spyOn(fs, 'writeFileSync').and.throwError('llama');
 
-    let result = MetadataHandler.write('0.0.2');
+      let result = MetadataHandler.write('0.0.2');
 
-    expect(result).toBe(false);
-    expect(ErrorHandler.logErrorAndSetExitCode).toHaveBeenCalled();
+      expect(result).toBe(false);
+      expect(ErrorHandler.logErrorAndSetExitCode).toHaveBeenCalled();
+    });
   });
 });

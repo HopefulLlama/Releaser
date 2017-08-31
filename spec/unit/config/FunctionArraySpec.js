@@ -35,12 +35,13 @@ describe('FunctionArray', () => {
   ].forEach((invalid) => {
     it(`${typeof invalid} should be invalid`, () => {
       testee = new FunctionArray(invalid);
-      expect(ErrorHandler.logErrorAndSetExitCode).toHaveBeenCalledWith(`Expected an array of functions, instead got: ${invalid}`);
+      expect(testee.isValid()).toBe(false);
     });
   });
 
   it('should be valid', () => {
     testee = new FunctionArray([MOCK_FUNCTION, MOCK_FUNCTION]);
+    expect(testee.isValid()).toBe(true);
     expect(ErrorHandler.logErrorAndSetExitCode).not.toHaveBeenCalled();
   });
 

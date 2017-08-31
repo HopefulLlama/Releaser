@@ -1,3 +1,5 @@
+const path = require('path');
+
 const winston = require('winston');
 
 const BASE = '../../../';
@@ -17,7 +19,9 @@ const METADATA = {
 
 const INPUTS = [CONFIG_FILE, NEW_VERSION];
 
-const INVALID_CONFIG_OPTIONS = [1, 2, 3];
+const INVALID_CONFIG_OPTIONS = {
+  preRelease: [1, 2, 3]
+};
 const MOCK_FUNCTION = (versionMetadata, done) => {
   done();
 };
@@ -56,26 +60,22 @@ describe('Runner', () => {
 
   describe('reading config', () => {
     afterEach(() => {
-      expect(winston.info).toHaveBeenCalled();
+      expect(winston.info).toHaveBeenCalledWith(`Reading configuration file: ${path.resolve(process.cwd(), CONFIG_FILE)}`);
     });
 
     describe('which is invalid', () => {
       beforeEach(() => {
-        spyOn(ConfigurationReader, 'read').and.callFake(() => {
-          return INVALID_CONFIG_OPTIONS;
-        });
+        spyOn(ConfigurationReader, 'read').and.returnValue(INVALID_CONFIG_OPTIONS);
       });
 
-      it('should return false on invalid config', () => {
+      it('should return false', () => {
         expect(Runner.run(...INPUTS)).toBe(false);
       });
     });
 
     describe('which is valid, reading metadata', () => {
       beforeEach(() => {
-        spyOn(ConfigurationReader, 'read').and.callFake(() => {
-          return VALID_CONFIG_OPTIONS;
-        });
+        spyOn(ConfigurationReader, 'read').and.returnValue(VALID_CONFIG_OPTIONS);
       });
 
       afterEach(() => {
@@ -96,9 +96,7 @@ describe('Runner', () => {
 
       describe('which is valid', () => {
         beforeEach(() => {
-          spyOn(MetadataHandler, 'read').and.callFake(() => {
-            return METADATA;
-          }); 
+          spyOn(MetadataHandler, 'read').and.returnValue(METADATA); 
         });
 
         afterEach(() => {
@@ -116,9 +114,7 @@ describe('Runner', () => {
 
         describe('with succesful metadata write', () => {
           beforeEach(() => {
-            spyOn(MetadataHandler, 'write').and.callFake(() => {
-              return true;
-            });
+            spyOn(MetadataHandler, 'write').and.returnValue(true);
           });
 
           afterEach(() => {
@@ -141,9 +137,7 @@ describe('Runner', () => {
 
         describe('with failing metadata write', () => {
           beforeEach(() => {
-            spyOn(MetadataHandler, 'write').and.callFake(() => {
-              return false;
-            });
+            spyOn(MetadataHandler, 'write').and.returnValue(false);
           });
 
           it('should fail overall', () => {

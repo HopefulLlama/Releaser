@@ -1,18 +1,8 @@
 const ErrorHandler = require('../util/ErrorHandler');
 
-function isFunctionArray(testee) {
-  return Array.isArray(testee) && testee.every((element) => {
-    return (typeof element === 'function');
-  });
-}
-
 class FunctionArray {
   constructor(array) {
-    if(isFunctionArray(array)) {
-      this.functions = array;
-    } else {
-      ErrorHandler.logErrorAndSetExitCode(`Expected an array of functions, instead got: ${array}`);
-    }
+    this.functions = array;
   }
 
   execute(versionMetadata) {
@@ -27,6 +17,12 @@ class FunctionArray {
 
     done();
   } 
+
+  isValid() {
+    return Array.isArray(this.functions) && this.functions.every((element) => {
+      return (typeof element === 'function');
+    });
+  }
 }
 
 module.exports = FunctionArray;

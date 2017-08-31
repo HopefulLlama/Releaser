@@ -1,6 +1,6 @@
-const llamaRlsrKeepAChangelog = require('llama-rlsr-keep-a-changelog');
-const llamaRlsrNpm = require('llama-rlsr-npm');
-const simpleGit = require('simple-git');
+const LlamaRlsrKeepAChangelog = require('llama-rlsr-keep-a-changelog');
+const LlamaRlsrNpm = require('llama-rlsr-npm');
+const simpleGit = require('simple-git')(process.cwd());
 
 module.exports = {
   preRelease: [

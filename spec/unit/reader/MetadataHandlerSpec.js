@@ -36,12 +36,10 @@ describe('MetadataHandler', () => {
 
     describe('when file is available', () => {
       beforeEach(() => {
-        spyOn(fs, 'readFileSync').and.callFake(() => {
-          return JSON.stringify({
-            oldVersion: '0.0.1', 
-            genericData: true
-          });
-        });
+        spyOn(fs, 'readFileSync').and.returnValue(JSON.stringify({
+          oldVersion: '0.0.1', 
+          genericData: true
+        }));
       });
       it('should read metadata and append newVersion', () => {
         testee = MetadataHandler.read('0.0.2');

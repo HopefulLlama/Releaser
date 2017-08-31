@@ -9,6 +9,10 @@ class Configuration {
     this.preRelease = new FunctionArray(preRelease);
     this.release = new FunctionArray(release);
   }
+
+  isValid() {
+    return this.preRelease.isValid() && this.release.isValid();
+  }
 }
 
 module.exports = Configuration;

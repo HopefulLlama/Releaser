@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-- Nothing yet
+### Fixed
+- Execution now properly waits for completion before continuing.
 
 ## [0.0.5] 2017-08-31
 ### Changed

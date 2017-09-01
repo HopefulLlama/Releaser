@@ -6,16 +6,21 @@ class FunctionArray {
   }
 
   execute(versionMetadata) {
-    let functions = this.functions;
+    return new Promise((resolve, reject) => {
 
-    function done() {
-      let func = functions.shift();
-      if(func !== undefined) {
-        func(versionMetadata, done);
+      let functions = this.functions;
+
+      function done() {
+        let func = functions.shift();
+        if(func !== undefined) {
+          func(versionMetadata, done);
+        } else {
+          resolve();
+        }
       }
-    }
 
-    done();
+      done();
+    });
   } 
 
   isValid() {

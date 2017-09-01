@@ -35,6 +35,24 @@ const VALID_CONFIG_OPTIONS = {
   release: [SPY_THREE]
 };
 
+function assertPass(parameters, callback, asyncDone) {
+  Runner.run(...parameters)
+  .then(() => {
+    callback();
+    asyncDone();
+  }).catch(fail);
+}
+
+function assertFail(parameters, callback, asyncDone) {
+  Runner.run(...parameters)
+  .then(fail).catch(() => {
+    callback();
+    asyncDone();
+  });
+}
+
+function noOp () {}
+
 describe('Runner', () => {
   beforeEach(() => {
     [
@@ -47,14 +65,15 @@ describe('Runner', () => {
     config = jasmine.createSpyObj('config', ['isValid', 'execute']);
   });
 
-  it('should fail validation', () => {
-    [
-      [CONFIG_FILE, undefined],
-      [undefined, NEW_VERSION],
-      [undefined, undefined],
-    ].forEach((testCase, index) => {
-      expect(Runner.run(...testCase)).toBe(false, index);
-      expect(ErrorHandler.logErrorAndSetExitCode).toHaveBeenCalledWith('Usage: llama-rlsr <config-file> <version>');
+  [
+    [CONFIG_FILE, undefined],
+    [undefined, NEW_VERSION],
+    [undefined, undefined],
+  ].forEach((testCase) => {
+    it(`should fail validation: ${testCase}`, (testDone) => {
+      assertFail(testCase, () => {
+        expect(ErrorHandler.logErrorAndSetExitCode).toHaveBeenCalledWith('Usage: llama-rlsr <config-file> <version>');
+      }, testDone);    
     });
   });
 
@@ -68,8 +87,8 @@ describe('Runner', () => {
         spyOn(ConfigurationReader, 'read').and.returnValue(INVALID_CONFIG_OPTIONS);
       });
 
-      it('should return false', () => {
-        expect(Runner.run(...INPUTS)).toBe(false);
+      it('should return false', (testDone) => {
+        assertFail(INPUTS, noOp, testDone);
       });
     });
 
@@ -84,13 +103,11 @@ describe('Runner', () => {
 
       describe('which is invalid', () => {
         beforeEach(() => {
-          spyOn(MetadataHandler, 'read').and.callFake(() => {
-            return null;
-          }); 
+          spyOn(MetadataHandler, 'read').and.returnValue(null); 
         });
 
-        it('should return false on invalid metadata', () => {
-          expect(Runner.run(...INPUTS)).toBe(false);
+        it('should return false on invalid metadata', (testDone) => {
+          assertFail(INPUTS, noOp, testDone);
         });
       });
 
@@ -129,9 +146,45 @@ describe('Runner', () => {
             expect(SPY_THREE).toHaveBeenCalledWith(METADATA, jasmine.any(Function));
           });
 
-          it('should pass through', () => {
-            expect(Runner.run(...INPUTS)).toBe(true);
-            expect(MetadataHandler.write).toHaveBeenCalledWith(NEW_VERSION);
+          it('should pass through', (testDone) => {
+            assertPass(INPUTS, () => {
+              expect(MetadataHandler.write).toHaveBeenCalledWith(NEW_VERSION);
+            }, testDone);
+          });
+
+          it('should execute things in order', (testDone) => {
+            let executedOrder = [];
+            let expectedOrder = [
+              'preReleaseOne',
+              'preReleaseTwo',
+              'releaseOne'
+            ];
+
+            VALID_CONFIG_OPTIONS.preRelease = [
+              (metadataVersion, done) => {
+                setTimeout(() => {
+                  executedOrder.push('preReleaseOne');
+                  done();
+                }, 1000);
+              },
+              (metadataVersion, done) => {
+                executedOrder.push('preReleaseTwo');
+                done();
+              }
+            ];
+
+            VALID_CONFIG_OPTIONS.release = [
+              (metadataVersion, done) => {
+                executedOrder.push('releaseOne');
+                done();
+              }
+            ];
+
+            assertPass(INPUTS, () => {
+              expectedOrder.forEach((content, index) => {
+                expect(content).toEqual(executedOrder[index]);
+              });
+            }, testDone);
           });
         });
 
@@ -140,9 +193,10 @@ describe('Runner', () => {
             spyOn(MetadataHandler, 'write').and.returnValue(false);
           });
 
-          it('should fail overall', () => {
-            expect(Runner.run(...INPUTS)).toBe(false);
-            expect(MetadataHandler.write).toHaveBeenCalledWith(NEW_VERSION);
+          it('should fail overall', (testDone) => {
+            assertFail(INPUTS, () => {
+              expect(MetadataHandler.write).toHaveBeenCalledWith(NEW_VERSION);
+            }, testDone);
           });
         });
       });

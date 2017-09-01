@@ -61,3 +61,4 @@ external/
 .coverrun
 .coverdata/
 reports/
+credentials/
